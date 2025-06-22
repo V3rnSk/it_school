@@ -45,24 +45,25 @@ def getPhotos():
             'likes': photo.likes,
             'effect': photo.effect,
             'commentsNumber': db.session.query(Comment).filter_by(photo_id=photo.id).count(),
-
         })
     return jsonify(photos_dict)
 
-@app.route('/api/photos/<int:index>')
-def getPhoto(index):
-    onePhoto = db.session.query(Photo).offset(index).limit(1).first()
-    onephoto_dict = []
-    comments = db.session.query(Comment).filter_by(photo_id=onePhoto.id).all()
-    for x in onePhoto:
-        onephoto_dict.append({
-            'src': x.src,
-            'description': x.description,
-            'likes': onePhoto.likes,
-            'effect': onePhoto.effect,
-            'commentsNumber': db.session.query(Comment).filter_by(photo_id=onePhoto.id).count(),
+@app.route('/api/photo', methods=['POST'])
+def getPhoto():
+    src = request.form.get('src').split('/')[-1]
+    print(src)
+    onephoto = db.session.query(Photo).filter_by(src=src).first()
+    print(onephoto)
+    comments = db.session.query(Comment).filter_by(photo_id=onephoto.id).all()
+
+    onephoto_dict = {
+            'src': onephoto.src,
+            'description': onephoto.description,
+            'likes': onephoto.likes,
+            'effect': onephoto.effect,
+            'commentsNumber': db.session.query(Comment).filter_by(photo_id=onephoto.id).count(),
             'comments': [comment.comment_text for comment in comments]
-        })
+        }
     return jsonify(onephoto_dict)
 
 if __name__ == '__main__':

@@ -127,7 +127,7 @@ function showPictures(photosArray){
   let picturesContainer = document.querySelector('.picturesContainer')
   for(let i = 0; i < photosArray.length; i++){
     let photoBlock = pictureExample.cloneNode(true)
-    photoBlock.querySelector('.pictureImg').src = photosArray[i].src 
+    photoBlock.querySelector('.pictureImg').src = '../static/img/' + photosArray[i].src
     photoBlock.querySelector('.pictureComments').innerText = photosArray[i].commentsNumber 
     photoBlock.querySelector('.pictureLikes').innerText = photosArray[i].likes
     photoBlock.querySelector('.pictureImg').style.filter = photosArray[i].effect
@@ -138,7 +138,7 @@ function showPictures(photosArray){
 
 function showCheckedPicture(picture){
   let pictureContainer = document.querySelector('.openedPictureContainer')
-  pictureContainer.querySelector('.openedPictureImg').src = picture.src 
+  pictureContainer.querySelector('.openedPictureImg').src = '../static/img/' + picture.src
   pictureContainer.querySelector('.openedPictureImg').style.filter = picture.effect 
   pictureContainer.querySelector('.openedPictureDescription').innerText = picture.description
   pictureContainer.querySelector('.pictureComments').innerText = picture.commentsNumber
@@ -159,12 +159,15 @@ let picturesContainer = document.querySelector('.picturesContainer')
 picturesContainer.addEventListener('click', function(evt){
 	let checkedElement = evt.target
 	if(checkedElement.classList.contains('pictureImg')){
-		/*for(let i = 0; i < picturesDB.length; i++){
-			if(picturesDB[i].src === checkedElement.getAttribute('src')){*/
-		showCheckedPicture()
-
-
-
+		let xhr = new XMLHttpRequest()
+		xhr.open('POST', `/api/photo`)
+		xhr.responseType = 'json'
+		let formData= new FormData()
+		formData.append('src',checkedElement.src)
+		xhr.send(formData)
+		xhr.onload= function(){
+			showCheckedPicture(xhr.response)
+		}
 	}
 })
 
